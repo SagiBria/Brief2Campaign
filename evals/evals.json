@@ -1,0 +1,23 @@
+{
+  "skill_name": "brief2campaign",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I have a marketing brief for a summer coffee campaign. Here's the brief:\n\nCampaign: Summer Refresh 2026\nBrand: FreshBrew Coffee\nBrand Colors: #2D5016 (forest green), #F5E6D3 (cream), #8B4513 (coffee brown)\nFonts: Playfair Display, Source Sans Pro\nTone: Warm, inviting, premium but approachable\nTarget Audience: Urban professionals 25-40\nRequired Formats: Instagram square (1:1)\nScenes:\n1. Steaming coffee on a sunlit cafe table with pastries, morning light\n2. Cold brew bottle on a picnic blanket in a park, summer afternoon\nHeadlines: \"Refresh Your Ritual\" / \"Crafted for Your Best Moments\"\n\nCan you run the Brief2Campaign pipeline on this?",
+      "expected_output": "Agent should check environment (.env keys, dependencies), save the brief text, run 'python bria_marketing_agent.py generate --brief-text \"...\" --output output', wait for completion, read output/candidates.json, display candidate images inline using the Read tool, and ask the user which images to select.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I need to run the marketing pipeline for our new energy drink. I have a brief in a DOCX file at ~/Documents/EnergyDrinkBrief.docx and product photos at ~/Desktop/can-front.png and ~/Desktop/can-side.png. I also want to use Bria ad template 1274 with brand ID 5678.",
+      "expected_output": "Agent should run 'python bria_marketing_agent.py generate --brief ~/Documents/EnergyDrinkBrief.docx --products ~/Desktop/can-front.png ~/Desktop/can-side.png --brand-id 5678 --templates 1274 --output output'. After generate completes, show candidate images, collect selection, then run 'python bria_marketing_agent.py finalize --candidates output/candidates.json --selected <ids> --brand-id 5678 --templates 1274'.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Here are the generated images from the campaign. I want to use images 1 and 3 for the ads. The brand ID is 162 and template is 1274.",
+      "expected_output": "Agent should map 'images 1 and 3' to candidate IDs (e.g., edited_0 and edited_2), then run 'python bria_marketing_agent.py finalize --candidates output/candidates.json --selected edited_0 edited_2 --brand-id 162 --templates 1274'. After completion, read and display the ad images from output/4_ads/.",
+      "files": []
+    }
+  ]
+}

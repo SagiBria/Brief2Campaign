@@ -1,0 +1,14 @@
+output/
+output_*/
+uploads/
+__pycache__/
+*.pyc
+.env
+.DS_Store
+venv/
+.venv/
+node_modules/
+.next/
+*.egg-info/
+dist/
+build/
