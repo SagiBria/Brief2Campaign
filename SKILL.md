@@ -23,7 +23,22 @@ asking the user.
 
 ## Setup
 
-### 1. Check API Keys
+### 1. Clone or Update the Repo
+
+The pipeline code lives on GitHub. Clone it if not present, or pull updates:
+
+```bash
+REPO_DIR="$HOME/.brief2campaign"
+if [ -d "$REPO_DIR/.git" ]; then
+  cd "$REPO_DIR" && git pull
+else
+  git clone https://github.com/SagiBria/Brief2Campaign.git "$REPO_DIR"
+fi
+```
+
+All subsequent commands should run from `$HOME/.brief2campaign`.
+
+### 2. Check API Keys
 
 The pipeline requires these environment variables. Check if they're set:
 
@@ -36,12 +51,14 @@ If any key is missing, ask the user and help them set it:
 - **ANTHROPIC_API_KEY** — Get from [console.anthropic.com](https://console.anthropic.com/)
 - **IMGBB_API_KEY** — Get from [api.imgbb.com](https://api.imgbb.com/) (only needed for ad generation)
 
-Save keys to the `.env` file in the skill's root directory.
+Save keys to the `.env` file in `$HOME/.brief2campaign/.env`.
 
-### 2. Install Dependencies
+### 3. Install Dependencies
 
 ```bash
-cd <skill-root>
+cd "$HOME/.brief2campaign"
+python3 -m venv .venv 2>/dev/null
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
@@ -71,7 +88,7 @@ The pipeline has 3 commands: `generate`, `finalize`, and `run`.
 Run the `generate` command. This creates images and saves a `candidates.json` for selection:
 
 ```bash
-cd <skill-root>
+cd "$HOME/.brief2campaign" && source .venv/bin/activate
 python bria_marketing_agent.py generate \
   --brief /path/to/brief.txt \
   --output output
