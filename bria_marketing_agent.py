@@ -596,7 +596,7 @@ class BriaClient:
         scan_dict(template_data)
         return slots
 
-    async def _poll_ad_url(self, ad_url: str, max_wait: int = 150, interval: int = 5) -> bytes:
+    async def _poll_ad_url(self, ad_url: str, max_wait: int = 180, interval: int = 5) -> bytes:
         """Poll an ad image URL until it returns image data (HTTP 200).
         Ad images may take up to ~2 minutes to become available."""
         elapsed = 0
@@ -655,10 +655,10 @@ class BriaClient:
         return urls
 
     async def create_ad(self, tid, brand_id, image_url, elements=None,
-                        retries=3):
+                        retries=5):
         """
         POST /v1/ads/generate with sync=true and expand_image operation.
-        After getting the URLs, polls each until the image is populated (up to ~2min).
+        After getting the URLs, polls each until the image is populated (up to ~3min).
         Returns (list_of_urls, data_with_all_image_bytes).
         Each template may return a different number of ad variants.
         """
@@ -681,7 +681,7 @@ class BriaClient:
         for attempt in range(retries):
             try:
                 async with self.session.post(url, headers=self.headers, json=payload,
-                                              timeout=aiohttp.ClientTimeout(total=180)) as resp:
+                                              timeout=aiohttp.ClientTimeout(total=300)) as resp:
                     content_type = resp.headers.get("Content-Type", "")
                     raw_text = await resp.text()
 
@@ -716,7 +716,7 @@ class BriaClient:
                         return ad_urls, data
 
                     if resp.status in (500, 502, 503, 504) and attempt < retries - 1:
-                        wait = 5 * (attempt + 1)
+                        wait = min(10 * (2 ** attempt), 60)  # 10s, 20s, 40s, 60s
                         print(f"   ⏳ Ads retry {attempt+1}/{retries} in {wait}s (HTTP {resp.status})...")
                         await asyncio.sleep(wait)
                         continue
@@ -728,7 +728,7 @@ class BriaClient:
 
             except (aiohttp.ClientError, asyncio.TimeoutError) as e:
                 if attempt < retries - 1:
-                    wait = 5 * (attempt + 1)
+                    wait = min(10 * (2 ** attempt), 60)  # 10s, 20s, 40s, 60s
                     print(f"   ⏳ Ads retry {attempt+1}/{retries} in {wait}s ({e})...")
                     await asyncio.sleep(wait)
                 else:
